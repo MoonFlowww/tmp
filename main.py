@@ -26,19 +26,17 @@ def convert_dbn_to_parquet(dbn_path, parquet_path):
 
 def main():
     ftp_host = "ftp.databento.com"
-    ftp_dir = "/M8PMTAQS"  # example directory, adjust accordingly
-    filename = "GLBX-20250725-7XQKQYDCLN"  # your exact file name on FTP
-    local_dir = "./downloads"
-    parquet_output = "./outputs/GLBX-20250725-7XQKQYDCLN.parquet"
-    
-    # If needed, provide FTP credentials; empty strings for anonymous
+    ftp_dir = "/M8PMTAQS"
+    filename = "GLBX-20250725-7XQKQYDCLN" 
+    local_dir = "/ssd/databases/parquet/data/futures"
+    parquet_output = "./MNQ_L1.parquet"
+
     ftp_user = ""
     ftp_pass = ""
     
-    # Step 1: Download
+
     dbn_file = download_from_ftp(ftp_host, ftp_dir, filename, local_dir, ftp_user, ftp_pass)
-    
-    # Step 2: Convert
+
     os.makedirs(os.path.dirname(parquet_output), exist_ok=True)
     convert_dbn_to_parquet(dbn_file, parquet_output)
 
