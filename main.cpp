@@ -1,4 +1,4 @@
-#include <databento/datetime.h>
+#include <databento/datetime.hpp>
 #include <databento/dbn.hpp>
 #include <databento/historical.hpp>
 #include <iostream>
