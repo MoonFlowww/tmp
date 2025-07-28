@@ -1,4 +1,4 @@
-g++ -std=c++17 main.cpp -o main \
+g++ -std=c++17 symbology.cpp -o symbology \
     -I /ssd/libs/databento-cpp/include \
     -I /ssd/libs/arrow/include \
     -L /ssd/libs/databento-cpp/lib -ldatabento \
