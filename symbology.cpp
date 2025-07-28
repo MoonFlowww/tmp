@@ -1,6 +1,4 @@
 #include <databento/historical.hpp>
-#include <databento/record.hpp>
-#include <databento/enums.hpp>
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -14,19 +12,19 @@ int main() {
     std::string api_key(api_key_env);
     std::cout << "Clé API récupérée : " << api_key << std::endl;
 
-    databento::Historical historical(api_key);
-
-    auto symbols = historical.Symbology.Resolve(
-        "GLBX.MDP3",
-        {"MNQ.CME"},
-        databento::SymbologyResolution::Parent,
-        "2024-07-28",
-        "2025-07-28"
+    databento::Historical historical(
+        nullptr,
+        api_key,
+        databento::HistoricalGateway::Bo1
     );
 
-    std::cout << "Contrats trouvés :" << std::endl;
-    for (const auto& s : symbols.results) {
-        std::cout << "- " << s.symbol << std::endl;
+    auto symbols = historical.ListSymbols("GLBX.MDP3");
+
+    std::cout << "Contrats disponibles pour MNQ :" << std::endl;
+    for (const auto& sym : symbols) {
+        if (sym.rfind("MNQ", 0) == 0) {  // Filtrer ceux qui commencent par MNQ
+            std::cout << "- " << sym << std::endl;
+        }
     }
 
     return 0;
