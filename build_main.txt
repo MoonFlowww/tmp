@@ -1,4 +1,7 @@
 g++ -std=c++17 main.cpp -o main \
-    $(pkg-config --cflags --libs libcurl arrow parquet) \
-    -I /ssd/libs/databento-cpp/include \
-    -L /ssd/libs/databento-cpp/lib -ldatabento
+  -I /ssd/libs/databento-cpp/include \
+  -I /ssd/libs/arrow/include \
+  -L /ssd/libs/databento-cpp/lib -ldatabento \
+  -L /ssd/libs/arrow/lib -larrow -lparquet \
+  -lssl -lcrypto -lz -lzstd -lbrotlidec -lbrotlienc -lbrotlicommon \
+  -lcurl
