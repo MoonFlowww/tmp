@@ -18,6 +18,28 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, void* stream) {
     return written;
 }
 
+int progress_callback(void* /*clientp*/, curl_off_t dltotal, curl_off_t dlnow, curl_off_t /*ultotal*/, curl_off_t /*ulnow*/) {
+    if (dltotal == 0) return 0;
+
+    int barWidth = 50;
+    float fraction = (float)dlnow / dltotal;
+    int pos = static_cast<int>(barWidth * fraction);
+
+    std::cout << "[";
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < pos) std::cout << "=";
+        else if (i == pos) std::cout << ">";
+        else std::cout << " ";
+    }
+    std::cout << "] " << int(fraction * 100.0) << "%\r";
+    std::cout.flush();
+
+    if (dlnow == dltotal) std::cout << std::endl;
+
+    return 0;
+}
+
+
 bool download_ftp(const std::string& ftp_url, const std::string& local_path,
                   const std::string& user = "", const std::string& password = "") {
     CURL* curl = curl_easy_init();
@@ -42,6 +64,11 @@ bool download_ftp(const std::string& ftp_url, const std::string& local_path,
         curl_easy_setopt(curl, CURLOPT_USERPWD, userpwd.c_str());
     }
 
+    // Progress bar setup
+    curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progress_callback);
+    curl_easy_setopt(curl, CURLOPT_XFERINFODATA, nullptr);
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+
     CURLcode res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
     ofs.close();
@@ -53,6 +80,7 @@ bool download_ftp(const std::string& ftp_url, const std::string& local_path,
 
     return true;
 }
+
 
 int main() {
     std::string ftp_host = "ftp.databento.com";
