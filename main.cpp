@@ -102,7 +102,8 @@ int main() {
     std::cout << "Downloaded to " << local_path << "\n";
 
     try {
-        auto store = databento::dbn::DBNStore::from_file(local_path);
+        auto store = databento::dbn::DBNFileStore::from_file(local_path);
+
 
         auto table = store.to_arrow_table();
 
