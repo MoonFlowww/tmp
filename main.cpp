@@ -2,10 +2,11 @@
 #include <filesystem>
 #include <curl/curl.h>
 #include <fstream>
+
 #include "databento/dbn_store.hpp"
 #include "arrow/io/file.h"
-#include "arrow/ipc/writer.h"
 #include "arrow/table.h"
+#include <parquet/arrow/writer.h> 
 
 size_t write_data(void* ptr, size_t size, size_t nmemb, void* stream) {
     std::ofstream* ofs = static_cast<std::ofstream*>(stream);
@@ -35,6 +36,7 @@ bool download_ftp(const std::string& ftp_url, const std::string& local_path,
     curl_easy_setopt(curl, CURLOPT_URL, ftp_url.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ofs);
+
     if (!user.empty()) {
         std::string userpwd = user + ":" + password;
         curl_easy_setopt(curl, CURLOPT_USERPWD, userpwd.c_str());
@@ -78,9 +80,13 @@ int main() {
 
         std::shared_ptr<arrow::io::FileOutputStream> outfile;
         ARROW_THROW_NOT_OK(arrow::io::FileOutputStream::Open(parquet_output, &outfile));
-        ARROW_THROW_NOT_OK(arrow::ipc::MakeFileWriter(outfile.get(), table->schema(), nullptr, &writer));
-        ARROW_THROW_NOT_OK(writer->WriteTable(*table));
-        ARROW_THROW_NOT_OK(writer->Close());
+
+        std::unique_ptr<parquet::arrow::FileWriter> parquet_writer;
+        ARROW_THROW_NOT_OK(parquet::arrow::FileWriter::Open(*table->schema(), arrow::default_memory_pool(), outfile, &parquet_writer));
+
+        ARROW_THROW_NOT_OK(parquet_writer->WriteTable(*table, table->num_rows()));
+
+        ARROW_THROW_NOT_OK(parquet_writer->Close());
 
         std::cout << "Converted and saved Parquet to " << parquet_output << "\n";
     } catch (const std::exception& e) {
