@@ -3,7 +3,7 @@
 #include <curl/curl.h>
 #include <fstream>
 
-#include "databento/dbn_store.hpp"
+#include "databento/dbn_file_store.hpp"
 #include "arrow/io/file.h"
 #include "arrow/table.h"
 #include <parquet/arrow/writer.h> 
