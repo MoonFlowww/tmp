@@ -22,7 +22,7 @@ int main() {
 
     std::cout << "Contrats disponibles pour MNQ :" << std::endl;
     for (const auto& sym : symbols) {
-        if (sym.rfind("MNQ", 0) == 0) {  // Filtrer ceux qui commencent par MNQ
+        if (sym.rfind("MNQ", 0) == 0) {
             std::cout << "- " << sym << std::endl;
         }
     }
